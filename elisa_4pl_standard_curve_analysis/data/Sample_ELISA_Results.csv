@@ -1,0 +1,48 @@
+﻿Sample,Conc,Dilution Factor,N1,N2,Disease Group
+STD,60,1,3.807,3.894,
+STD,24,1,2.398,2.428,
+STD,9.6,1,1.26,1.448,
+STD,3.84,1,0.704,0.615,
+STD,1.536,1,0.383,0.407,
+STD,0.614,1,0.308,0.318,
+STD,0,1,0.23,0.238,
+A01,,150,2.871,3.121,Disease A
+A02,,150,2.332,2.259,Disease A
+A03,,150,2.729,3.223,Disease A
+A04,,150,2.125,2.215,Disease A
+A05,,150,2.703,2.481,Disease A
+A06,,150,2.934,2.689,Disease A
+A07,,150,2.668,2.35,Disease A
+A08,,150,2.461,2.333,Disease A
+A09,,150,2.896,2.932,Disease A
+A10,,150,2.495,2.571,Disease A
+B01,,150,1.749,1.493,Disease B
+B02,,150,1.532,1.914,Disease B
+B03,,150,1.576,1.69,Disease B
+B04,,150,1.437,1.098,Disease B
+B05,,150,1.775,1.88,Disease B
+B06,,150,2.032,1.98,Disease B
+B07,,150,2.649,2.502,Disease B
+B08,,150,2.711,2.196,Disease B
+B09,,150,2.344,2.074,Disease B
+B10,,150,2.025,1.825,Disease B
+C01,,150,1.899,1.305,Disease C
+C02,,150,1.31,1.469,Disease C
+C03,,150,1.415,1.945,Disease C
+C04,,150,1.656,1.727,Disease C
+C05,,150,2.489,2.308,Disease C
+C06,,150,1.849,2.248,Disease C
+C07,,150,2.215,2.219,Disease C
+C08,,150,1.527,2.184,Disease C
+C09,,150,1.939,1.952,Disease C
+C10,,150,1.694,2.207,Disease C
+HV01,,150,1.353,1.719,Healthy Volunteer
+HV02,,150,0.501,0.694,Healthy Volunteer
+HV03,,150,1.428,1.367,Healthy Volunteer
+HV04,,150,1.093,1.569,Healthy Volunteer
+HV05,,150,1.25,1.373,Healthy Volunteer
+HV06,,150,1.731,1.517,Healthy Volunteer
+HV07,,150,1.464,1.33,Healthy Volunteer
+HV08,,150,1.737,1.29,Healthy Volunteer
+HV09,,150,1.631,1.363,Healthy Volunteer
+HV10,,150,1.207,1.283,Healthy Volunteer
