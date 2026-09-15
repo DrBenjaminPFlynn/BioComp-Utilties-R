@@ -16,14 +16,12 @@ Built for functional immunology and clinical complement diagnostics (classical p
 ## Input Data Schema Definition
 The pipeline processes raw CSV files located in the `data/` directory (e.g., `data/CH50_assay_data.csv`). The input CSV must contain three metadata columns followed by numerical serial dilution headers.
 
-```text
 | Column Name | Data Type | Requirement / Description |
 | :--- | :--- | :--- |
 | `ID` | Numeric / Text | Run or row identifier. |
 | `Patient` | Text | Patient or control tag. **Must include `NegCon` (0% baseline) and `PosCon` (100% baseline)**. Optional references: `Normal Ref`, `Low Ref`. |
 | `Sample` | Text | Sample subgroup, designation, or replicate tag (e.g., `Control`, `Ref`, `A`, `B`). |
 | `<Dilution Headers>` | Numeric | Absorbance ($OD$) values for each serial dilution. Column headers must be numeric fold-dilutions (e.g., `128`, `64`, `32`). |
-```
 
 ## Repository Architecture
 
@@ -62,25 +60,33 @@ install.packages("tidyverse") # Includes ggplot2, dplyr, tidyr, readr, and purrr
 ## Detailed Execution Steps
 ### 1. Enviroment & File Validation
   * Verifies required directory structures (data/, output/) and confirms the presence of the input dataset (CH50_assay_data.csv).
+
 ### 2. Data Reshaping & Assay Auto-Detection
   * Pivots raw dilution header columns into a tidy long format.Converts fold-dilutions to serum concentration fractions: $PlasmaFraction = \frac{1}{Dilution}$.
   * Evaluates the minimum plasma fraction across the dataset to dynamically set the assay mode to CH50 ($< 0.02$) or AP50 ($\ge 0.02$), automatically adjusting downstream plotting limits and axis breaks.
+
 ### 3. Control Normalisation & Hemolysis Scaling
   * Isolates control wells (NegCon and PosCon) to compute baseline mean optical densities.
   * Normalizes raw sample optical density ($OD$) into a relative hemolysis fraction ($0.0 - 1.0$):
   
+  \
   $$Haemolysis = \frac{OD - OD_{NegCon}}{OD_{PosCon} - OD_{NegCon}}$$
+  \
   
 ### 4. Log-Linear Regression & $HAEM_{50}$ Calculation
   * Fits an ordinary least squares regression model per sample: $Haemolysis = a \cdot \ln(PlasmaFraction) + b$.
   * Solves for the exact plasma percentage ($HAEM_{50}$) required to induce 50% cell lysis ($y = 0.5$):
   
+  \
   $$HAEM_{50} = \exp\left(\frac{0.5 - b}{a}\right) \times 100$$
+  \
   
   * Implements guardrails for mathematical edge cases (e.g., negative slopes, infinite or non-convergent calculations) by floor/ceiling capping non-calculable values at $100\%$.
+
 ### 5. Cohort Reference Stratification
   * Dynamically extracts reference thresholds (normal_ref_val, low_ref_val) from control samples containing Normal or Low designations (with safe fallbacks of $25\%$ and $55\%$).
   * Stratifies test samples into Normal, Low/Borderline, or Deficient functional complement categories. 
+
 ### 6. Automated Visualization & Multi-Format Rendering
   * Cohort Summary Plot: Generates stem/lollipop plots displaying $HAEM_{50}$ values per patient. Uses an inverted Y-axis (scale_y_reverse) so that higher biological activity (lower required plasma fraction) is plotted vertically higher.
   * Individual Dose-Response Curves: Loops through individual samples to render linear regression curves over log plasma fractions, complete with dashed red target crosshairs at $y = 0.5$ and annotated $HAEM_{50}$ callout badges.

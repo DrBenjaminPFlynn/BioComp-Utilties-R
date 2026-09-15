@@ -3,7 +3,7 @@
 A curated suite of modular, production-ready R data pipelines built for biological data analysis, immunodiagnostic quantification, and translational clinical research workflows.
 
 ## Executive Context
-This repository houses standardized end-to-end analytical pipelines for processing raw microplate reader data, executing mathematical regression modeling, integrating high-dimensional clinical metadata, and generating publication-grade vector and raster visualizations. 
+This repository houses standardized end-to-end analytical pipelines for processing raw microplate reader data, executing mathematical regression modeling, integrating high-dimensional clinical metadata, and generating publication-grade vector and raster visualizations.
 
 All sub-projects adhere to strict software design standards:
 * **Strict Separation of Concerns:** Standardized directory hierarchy (`data/`, `output/`) across all tools.
@@ -35,6 +35,17 @@ An automated pipeline for evaluating functional classical (CH50) and alternative
   * Cohort visualization with inverted Y-axis scaling (`scale_y_reverse`), accurately reflecting that lower required plasma volumes denote higher biological activity.
 * **Outputs:** Inverted cohort stem/lollipop plots, individual sample dose-response curves with target crosshairs, and extracted model parameter tables.
 
+### 3. Kinetic Protease Peptide Probe Assay (`protease-peptide-assay/`)
+An automated kinetic pipeline for processing spectrophotometric rate data ($OD_{405}$) from chromogenic protease cleavage assays (e.g., enzymatic activity via DTNB/TNB detection).
+
+* **Core Methodology:** Ordinary Least Squares (OLS) linear progress modeling ($\Delta OD_{405} / \Delta t$) and Beer-Lambert transformation for molar specific activity ($\text{pmol}\cdot\text{min}^{-1}\cdot\mu\text{g}^{-1}$) calculations.
+* **Key Features:**
+  * Dual-stage baseline correction (replicate-wise time-matched `BLANK` subtraction and time-zero $T_0$ background subtraction).
+  * Direct extraction of initial steady-state reaction velocities ($\text{Slope} = \Delta OD / \Delta t$).
+  * Beer-Lambert optical transformation integrating extinction coefficient ($\epsilon$), path length ($l$), reaction volume ($V$), and loaded enzyme mass ($m$).
+  * Visual diagnostic suites including LOESS progress curves with inline text path labels (`geomtextpath`), linear rate fits, and repelled cohort specific activity boxplots (`ggrepel`).
+* **Outputs:** Molar specific activity calculation tables (`Calculated_Protease_Activity.csv`), diagnostic LOESS curves, linear velocity curves, and cohort specific activity boxplots.
+
 ---
 
 ## Repository Architecture
@@ -43,16 +54,16 @@ An automated pipeline for evaluating functional classical (CH50) and alternative
 BioComp-Utilities-R/
 ├── elisa-analysis-pipeline/
 │   ├── data/
-│   │   ├── Sample_ELISA_Results.csv           # Raw ELISA OD values & dilutions
-│   │   └── Sample_3D_Organoid_Phenotypes.csv # Organoid phenotype metadata
+│   │   ├── Sample_ELISA_Results.csv              # Raw ELISA OD values & dilutions
+│   │   └── Sample_3D_Organoid_Phenotypes.csv     # Organoid phenotype metadata
 │   ├── output/
-│   │   ├── RAnalysedResults.csv               # Merged analytical dataset
-│   │   ├── StandardCurve.tiff                # 4PL calibration plot
-│   │   ├── PLOT_OD_Values.tiff / .svg        # QC OD boxplots
-│   │   ├── PLOT_EstConc.tiff / .svg          # Interpolated concentrations
-│   │   └── PLOTConcLog2.tiff / .svg          # Log2 concentration profiles
-│   ├── elisa_4pl_standard_curve_analysis.R    # Primary execution script
-│   └── elisa_4pl_standard_curve_analysis.Rproj# RStudio project file
+│   │   ├── RAnalysedResults.csv                  # Merged analytical dataset
+│   │   ├── StandardCurve.tiff                    # 4PL calibration plot
+│   │   ├── PLOT_OD_Values.tiff / .svg            # QC OD boxplots
+│   │   ├── PLOT_EstConc.tiff / .svg              # Interpolated concentrations
+│   │   └── PLOTConcLog2.tiff / .svg              # Log2 concentration profiles
+│   ├── elisa_4pl_standard_curve_analysis.R       # Primary execution script
+│   └── elisa_4pl_standard_curve_analysis.Rproj   # RStudio project file
 │
 ├── hemolytic-assay-analysis/
 │   ├── data/
@@ -65,6 +76,18 @@ BioComp-Utilities-R/
 │   ├── haemolysis_analysis.R               # Primary execution script
 │   └── hemolysis_analysis.Rproj            # RStudio project file
 │
+├── protease-peptide-assay/
+│   ├── data/
+│   │   ├── Data.csv                                        # Raw kinetic microplate reader OD405 readings
+│   │   └── PlateMap.csv                                    # Well-level treatment and cohort metadata
+│   ├── output/
+│   │   ├── Calculated_Protease_Activity.csv                # Extracted reaction rates & specific activity
+│   │   ├── B.Adjusted.OD_CurveOfBestFit.tiff / .svg        # LOESS progress curves
+│   │   ├── B.Adjusted.OD_LineOfBestFit.tiff / .svg         # OLS linear velocity fits
+│   │   └── Protease_Specific_Activity_BoxPlot.tiff / .svg  # Cohort activity boxplot
+│   ├── protease_peptide_assay_analysis.R                   # Primary execution script
+│   └── protease_peptide_assay.Rproj                        # RStudio project file
+│
 └── README.md
 ```
 
@@ -73,10 +96,11 @@ Both pipelines require R (≥ 4.0.0). You can install all required packages acro
 
 ```R
 install.packages(c(
-  "tidyverse", # Core suite: ggplot2, dplyr, tidyr, readr, purrr, stringr, forcats
-  "drc",       # Non-linear dose-response curve fitting (4PL)
-  "ggrepel",   # Non-overlapping plot text labels
-  "svglite"    # High-performance SVG graphics device
+  "tidyverse",        # Core suite: ggplot2, dplyr, tidyr, readr, purrr, stringr, forcats
+  "drc",              # Non-linear dose-response curve fitting (4PL)
+  "ggrepel",          # Non-overlapping plot text labels
+  "geomtextpath",     # Direct text labeling along ggplot paths
+  "svglite"           # High-performance SVG graphics device
 ))
 ```
 Note: Detailed execution steps, mathematical formulas, and input data schemas are documented within the respective README.md files located in each pipeline directory.

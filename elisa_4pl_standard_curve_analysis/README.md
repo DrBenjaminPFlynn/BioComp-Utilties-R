@@ -48,7 +48,7 @@ elisa-analysis-repo/
 └── elisa_4pl_standard_curve_analysis.Rproj   # RStudio environment project file
 ```
 
-Prerequisites & Installation
+## Prerequisites & Installation
 Ensure R (≥ 4.0.0) is installed along with the required CRAN dependencies:
 
 ```R
@@ -64,6 +64,7 @@ install.packages(c(
 ))
 ```
 
+## Pipeline Execution Workflow
 ```text
 [1. Config & Setup] ────────► [2. Data Ingestion] ────────► [3. Blank Correction]
   • Output directory            • Raw ELISA CSV               • Mean blank calculated
@@ -78,25 +79,38 @@ install.packages(c(
 ## Detailed Execution Steps
 ### 1. Environment Initialization & Configuration
   * Configures analysis parameters (NO.OF.REPS, ELISA.Target) and initializes destination directory structures (output/).
+
 ### 2. Data Ingestion & Blank Adjustment
   * Parses raw optical density ($OD_{450}$) values.
   * Calculates the mean background absorbance from blank controls (STD at 0 ng/mL).
   * Subtracts blank values at the individual replicate level ($N_1, N_2, \dots, N_k$) prior to taking mean values to guarantee statistical consistency.
-### 3. Metadata Merging & Data ReshapingMerges 3D organoid phenotypic metadata (Sample_3D_Organoid_Phenotypes.csv) using primary key Sample.
+
+### 3. Metadata Merging & Data Reshaping
+  * Merges 3D organoid phenotypic metadata (Sample_3D_Organoid_Phenotypes.csv) using primary key Sample.
   * Reshapes wide-format replicate columns into tidy, long-format data frames (df.ggplot) optimized for ggplot2 plotting routines.
+
 ### 4. Quality Control Assessment
   * Generates sample-wise $OD_{450}$ boxplots alongside standard calibration lines (PLOT_OD_Values).
   * Applies viridis color mapping to stratify samples by spheroid morphometrics and detect potential contamination or outliers.
+
 ### 5. Non-Linear 4PL Standard Curve Calibration
   * Extracts standard curve control data and fits a 4-Parameter Logistic model using drc::drm():
   
-  $$y = c + \frac{d - c}{1 + \exp\left(b(\log(x) - \log(e))\right)}$$(where $b$ = Hill slope, $c$ = lower asymptote, $d$ = upper asymptote, $e$ = $EC_{50}$).
-  
+\
+$$
+y = c + \frac{d - c}{1 + \exp\left(b(\log(x) - \log(e))\right)}$$
+<div style="text-align: center;">
+  (where $b$ = Hill slope, $c$ = lower asymptote, $d$ = upper asymptote, $e$ = $EC_{50}$).
+</div>\
+
+
   * Renders and exports the fitted calibration curve (StandardCurve.tiff).
-6. Concentration Interpolation & Floor Bounding
+
+### 6. Concentration Interpolation & Floor Bounding
   * Evaluates unknown sample responses against the fitted 4PL model using drc::ED().
   * Adjusts estimated values by sample-specific dilution factors.Replaces negative or non-estimable values with 0 ng/mL to maintain downstream data integrity.
-7. Downstream Visualization & Automated Export
+
+### 7. Downstream Visualization & Automated Export
   * Generates raw (PLOT_EstConc) and $\log_2(x + 1)$ transformed (PLOTConcLog2) concentration boxplots grouped by clinical cohort.
   * Exports analytical tables (RAnalysedResults.csv) and paired vector (.svg) and high-resolution raster (.tiff, 300 DPI) visual artifacts.License
 
